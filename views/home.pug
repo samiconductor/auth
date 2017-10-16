@@ -1,0 +1,13 @@
+html
+  body
+    h1= user ? 'Welcome ' + user.username : 'Welcome'
+
+  if user
+    div
+      form(action='/logout', method='POST')
+        button(type='submit') Logout
+
+  else
+    div
+      a(href='/login') Login
+

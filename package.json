@@ -1,0 +1,35 @@
+{
+  "name": "auth-server",
+  "version": "1.0.0",
+  "description": "Authentication server for Nginx auth request module",
+  "main": "server.js",
+  "dependencies": {
+    "bcrypt": "^1.0.3",
+    "boom": "^6.0.0",
+    "hapi": "^16.6.2",
+    "hapi-auth-jwt2": "^7.3.0",
+    "hapi-pg-pool": "^1.0.0",
+    "hoek": "^5.0.0",
+    "joi": "^11.2.0",
+    "jsonwebtoken": "^8.0.1",
+    "pg": "^7.3.0",
+    "pug": "^2.0.0-rc.4",
+    "require-all": "^2.2.0",
+    "uuid": "^3.1.0",
+    "vision": "^4.1.1"
+  },
+  "devDependencies": {
+    "cross-env": "^5.0.5"
+  },
+  "scripts": {
+    "server": "cross-env NODE_ENV=development JWT_SECRET=jwt PGDATABASE=auth PGUSER=authserver PGPASSFILE=.pgpass node server.js"
+  },
+  "keywords": [
+    "jwt",
+    "hapi",
+    "auth",
+    "nginx"
+  ],
+  "author": "Sam Simmons <sam@samiconductor.com>",
+  "license": "ISC"
+}

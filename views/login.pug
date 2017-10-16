@@ -1,0 +1,22 @@
+html
+  body
+    if errors && errors.login
+      span.error= errors.login
+
+    form(action='/login' method='POST')
+      div
+        label Username
+          input(type='text' name='username' value=username)
+
+        if errors && errors.username
+          span.error= errors.username
+
+      div
+        label Password
+          input(type='password' name='password' value=password)
+
+        if errors && errors.password
+          span.error= errors.password
+
+      div
+        button Login
