@@ -10,7 +10,8 @@ module.exports = {
     },
     handler: (request, reply) => {
       reply.view('home', {
-        user: request.pre.user
+        user: request.pre.user,
+        session: request.app.session
       })
     }
   }

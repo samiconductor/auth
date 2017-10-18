@@ -14,17 +14,19 @@ module.exports = {
   path: '/login',
   config: {
     auth: false,
-    handler: (request, reply) => {
-      return request.app.repos.user.validCredentials(request.payload.username, request.payload.password).then(user => {
-        return request.app.repos.session.createForUser(user.id).then(session => {
-          const token = jwt.sign({
-            sid: session.id,
-            uid: user.id
-          }, process.env.JWT_SECRET)
+    handler: async (request, reply) => {
+      try {
+        const user = await request.app.repos.user.withCredentials(
+          request.payload.username,
+          request.payload.password
+        )
+        const session = await request.app.repos.session.createForUser(user.id)
+        const token = jwt.sign({
+          sessionId: session.id
+        }, process.env.JWT_SECRET)
 
-          return reply.redirect('/').state('token', token)
-        })
-      }).catch(error => {
+        return reply.redirect('/').state('token', token)
+      } catch(error) {
         if (errors.instanceOf(error,
           errors.NoResultsError,
           errors.InvalidCredentialsError
@@ -33,7 +35,7 @@ module.exports = {
         }
 
         return reply(Boom.boomify(error))
-      })
+      }
     },
     validate: {
       payload: schema,

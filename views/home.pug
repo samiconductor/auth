@@ -1,13 +1,23 @@
 html
   body
-    h1= user ? 'Welcome ' + user.username : 'Welcome'
+    if user
+      h1 Welcome #{user.username}
 
-  if user
-    div
-      form(action='/logout', method='POST')
-        button(type='submit') Logout
+      h3 Session
+      p Session started #{session.startTime.fromNow()}
 
-  else
-    div
-      a(href='/login') Login
+      h3 Scopes
+      ul
+        each scope in user.scopes
+          li #{scope.name} - #{scope.description}
+
+      div
+        form(action='/logout', method='POST')
+          button(type='submit') Logout
+
+    else
+      h1 Welcome
+
+      div
+        a(href='/login') Please Login
 

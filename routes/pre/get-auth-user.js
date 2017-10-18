@@ -1,8 +1,14 @@
 module.exports = {
   assign: 'user',
-  method: (request, reply) => {
+  method: async (request, reply) => {
     if (request.auth.isAuthenticated) {
-      return request.app.repos.user.get(request.app.userId).then(reply)
+      try {
+        const user = await request.app.repos.user.get(request.app.session.userId)
+
+        return reply(user)
+      } catch(error) {
+        return reply(error)
+      }
     }
 
     reply()

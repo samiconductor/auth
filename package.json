@@ -8,13 +8,14 @@
     "boom": "^6.0.0",
     "hapi": "^16.6.2",
     "hapi-auth-jwt2": "^7.3.0",
-    "hapi-pg-pool": "^1.0.0",
     "hoek": "^5.0.0",
     "joi": "^11.2.0",
     "jsonwebtoken": "^8.0.1",
-    "pg": "^7.3.0",
+    "moment": "^2.19.1",
     "pug": "^2.0.0-rc.4",
     "require-all": "^2.2.0",
+    "sqlite": "^2.8.0",
+    "sqlite3": "^3.1.13",
     "uuid": "^3.1.0",
     "vision": "^4.1.1"
   },
@@ -22,7 +23,7 @@
     "cross-env": "^5.0.5"
   },
   "scripts": {
-    "server": "cross-env NODE_ENV=development JWT_SECRET=jwt PGDATABASE=auth PGUSER=authserver PGPASSFILE=.pgpass node server.js"
+    "server": "cross-env NODE_ENV=development JWT_SECRET=jwt DB=db/auth.db node server.js"
   },
   "keywords": [
     "jwt",

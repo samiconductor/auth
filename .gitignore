@@ -1,2 +1,2 @@
-.pgpass
 node_modules
+db/*.db

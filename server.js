@@ -7,6 +7,10 @@ const routes = require('require-all')({
 })
 
 const server = new Hapi.Server({
+  debug: {
+    log: ['error'],
+    request: ['error', 'database']
+  },
   connections: {
     state: {
       isSecure: process.env.NODE_ENV !== 'development'
@@ -18,7 +22,6 @@ server.connection({port: 3000})
 
 server.register([
   require('vision'),
-  require('hapi-pg-pool'),
   require('./lib/request-repos'),
   require('hapi-auth-jwt2')
 ], err => {
@@ -49,5 +52,6 @@ server.register([
 
 server.start(err => {
   Hoek.assert(!err, err)
+
   console.log(`Server running at: ${server.info.uri}`)
 })
