@@ -6,12 +6,11 @@ module.exports = {
       require('./pre/get-auth-user')
     ],
     auth: {
-      mode: 'optional'
+      mode: 'try'
     },
     handler: (request, reply) => {
       reply.view('home', {
-        user: request.pre.user,
-        session: request.app.session
+        user: request.pre.user
       })
     }
   }

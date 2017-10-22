@@ -2,15 +2,20 @@ const privs = require('../lib/privileges')
 
 module.exports = {
   method: 'GET',
-  path: '/authorized',
+  path: '/admin',
   config: {
+    pre: [
+      require('./pre/get-auth-user')
+    ],
     auth: {
       access: [{
-        scope: [privs.super, '{query.scope}']
+        scope: privs.admin
       }]
     },
     handler: (request, reply) => {
-      reply()
+      reply.view('home', {
+        user: request.pre.user
+      })
     }
   }
 }

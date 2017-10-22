@@ -9,12 +9,7 @@ const routes = require('require-all')({
 const server = new Hapi.Server({
   debug: {
     log: ['error'],
-    request: ['error', 'database']
-  },
-  connections: {
-    state: {
-      isSecure: process.env.NODE_ENV !== 'development'
-    }
+    request: ['error', 'db']
   }
 })
 
@@ -45,6 +40,10 @@ server.register([
     verifyOptions: {
       algorithms: ['HS256']
     }
+  })
+
+  server.state('token', {
+    isSecure: process.env.NODE_ENV !== 'development'
   })
 
   server.route(Object.values(routes))

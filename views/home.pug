@@ -4,7 +4,11 @@ html
       h1 Welcome #{user.username}
 
       h3 Session
-      p Session started #{session.startTime.fromNow()}
+      p Session started #{user.session.startTime.fromNow()}
+
+      if user.privs.admin
+        p
+          a(href='/admin') Administrative Detail
 
       h3 Scopes
       ul
