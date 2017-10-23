@@ -3,12 +3,21 @@
   "version": "1.0.0",
   "description": "Authentication server for Nginx auth request module",
   "main": "server.js",
+  "repository": "samiconductor/auth-server",
+  "scripts": {
+    "clean": "rimraf elm-dist",
+    "lint": "eslint server.js lib/** routes/** plugins/** --quiet",
+    "prebuild": "npm run clean && npm run lint",
+    "build": "webpack --config webpack.config.js",
+    "start": "cross-env NODE_ENV=development JWT_SECRET=jwt DB=db/auth.db node server.js"
+  },
   "dependencies": {
     "bcrypt": "^1.0.3",
     "boom": "^6.0.0",
     "hapi": "^16.6.2",
     "hapi-auth-jwt2": "^7.3.0",
     "hoek": "^5.0.0",
+    "inert": "^4.2.1",
     "joi": "^11.2.0",
     "jsonwebtoken": "^8.0.1",
     "moment": "^2.19.1",
@@ -21,10 +30,14 @@
     "vision": "^4.1.1"
   },
   "devDependencies": {
-    "cross-env": "^5.0.5"
-  },
-  "scripts": {
-    "server": "cross-env NODE_ENV=development JWT_SECRET=jwt DB=db/auth.db node server.js"
+    "cross-env": "^5.0.5",
+    "elm-hot-loader": "^0.5.4",
+    "elm-webpack-loader": "^4.3.1",
+    "eslint": "^4.9.0",
+    "glob": "^7.1.2",
+    "hapi-webpack-plugin": "^2.0.0",
+    "rimraf": "^2.6.2",
+    "webpack": "^3.8.1"
   },
   "keywords": [
     "jwt",

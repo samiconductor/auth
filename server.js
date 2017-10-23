@@ -8,7 +8,7 @@ const routes = require('require-all')({
 
 const server = new Hapi.Server({
   debug: {
-    log: ['error'],
+    log: ['error', 'start', 'webpack'],
     request: ['error', 'db']
   }
 })
@@ -17,7 +17,9 @@ server.connection({port: 3000})
 
 server.register([
   require('vision'),
-  require('./lib/request-repos'),
+  require('inert'),
+  require('./plugins/assets'),
+  require('./plugins/request-repos'),
   require('hapi-auth-jwt2')
 ], err => {
   Hoek.assert(!err, err)
@@ -29,7 +31,7 @@ server.register([
     relativeTo: __dirname,
     path: 'views',
     compileOptions: {
-      pretty: true,
+      pretty: true
     },
     isCached: process.env.NODE_ENV !== 'development'
   })
@@ -52,5 +54,5 @@ server.register([
 server.start(err => {
   Hoek.assert(!err, err)
 
-  console.log(`Server running at: ${server.info.uri}`)
+  server.log(['start'], `Server running at: ${server.info.uri}`)
 })

@@ -1,5 +1,6 @@
 const path = require('path')
-const pkg = require('../package.json')
+const name = path.basename(__filename, path.extname(__filename))
+const {version} = require('../package.json')
 const sqlite = require('sqlite')
 const verbose = process.env.NODE_ENV === 'development'
 
@@ -16,7 +17,7 @@ exports.register = (server, options, next) => {
       }
 
       request.app.repos = require('require-all')({
-        dirname: path.join(__dirname, 'repos'),
+        dirname: path.join(__dirname, '../lib/repos'),
         resolve: Repo => new Repo(db)
       })
 
@@ -42,4 +43,4 @@ exports.register = (server, options, next) => {
 
 }
 
-exports.register.attributes = {pkg}
+exports.register.attributes = {name, version}

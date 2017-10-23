@@ -5,11 +5,13 @@ module.exports = {
   path: '/logout',
   config: {
     auth: {
-      mode: 'optional'
+      mode: 'try'
     },
     handler: async (request, reply) => {
       try {
-        await request.app.repos.session.end(request.auth.credentials.sessionId);
+        if (request.auth.isAuthenticated) {
+          await request.app.repos.session.end(request.auth.credentials.sessionId)
+        }
 
         reply.redirect('/').unstate('token')
       } catch (error) {

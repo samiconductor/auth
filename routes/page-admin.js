@@ -13,7 +13,7 @@ module.exports = {
       }]
     },
     handler: (request, reply) => {
-      reply.view('home', {
+      reply.view('admin', {
         user: request.pre.user
       })
     }

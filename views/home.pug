@@ -1,27 +1,24 @@
-html
-  body
-    if user
-      h1 Welcome #{user.username}
+if user
+  h1 Welcome #{user.username}
 
-      h3 Session
-      p Session started #{user.session.startTime.fromNow()}
+  h3 Session
+  p Session started #{user.session.startTime.fromNow()}
 
-      if user.privs.admin
-        p
-          a(href='/admin') Administrative Detail
+  if user.privs.admin
+    p
+      a(href='/admin') Administrative Detail
 
-      h3 Scopes
-      ul
-        each scope in user.scopes
-          li #{scope.name} - #{scope.description}
+  h3 Scopes
+  ul
+    each scope in user.scopes
+      li #{scope.name} - #{scope.description}
 
-      div
-        form(action='/logout', method='POST')
-          button(type='submit') Logout
+  div
+    form(action='/logout', method='POST')
+      button(type='submit') Logout
 
-    else
-      h1 Welcome
+else
+  h1 Welcome
 
-      div
-        a(href='/login') Please Login
-
+  div
+    a(href='/login') Please Login
