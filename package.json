@@ -5,11 +5,10 @@
   "main": "server.js",
   "repository": "samiconductor/auth-server",
   "scripts": {
-    "clean": "rimraf elm-dist",
-    "lint": "eslint server.js lib/** routes/** plugins/** --quiet",
-    "prebuild": "npm run clean && npm run lint",
-    "build": "webpack --config webpack.config.js",
-    "start": "cross-env NODE_ENV=development JWT_SECRET=jwt DB=db/auth.db node server.js"
+    "prepublish": "npm run lint",
+    "lint": "eslint --ext .js server.js lib/",
+    "lint:fix": "npm run lint -- --fix",
+    "serve": "cross-env NODE_ENV=development JWT_SECRET=jwt DB=db/auth.db nodemon server.js"
   },
   "dependencies": {
     "bcrypt": "^1.0.3",
@@ -21,23 +20,18 @@
     "joi": "^11.2.0",
     "jsonwebtoken": "^8.0.1",
     "moment": "^2.19.1",
-    "pug": "^2.0.0-rc.4",
     "require-all": "^2.2.0",
     "slug": "^0.9.1",
     "sqlite": "^2.8.0",
     "sqlite3": "^3.1.13",
-    "uuid": "^3.1.0",
-    "vision": "^4.1.1"
+    "uuid": "^3.1.0"
   },
   "devDependencies": {
     "cross-env": "^5.0.5",
-    "elm-hot-loader": "^0.5.4",
-    "elm-webpack-loader": "^4.3.1",
     "eslint": "^4.9.0",
     "glob": "^7.1.2",
-    "hapi-webpack-plugin": "^2.0.0",
-    "rimraf": "^2.6.2",
-    "webpack": "^3.8.1"
+    "nodemon": "^1.14.7",
+    "rimraf": "^2.6.2"
   },
   "keywords": [
     "jwt",
@@ -46,5 +40,5 @@
     "nginx"
   ],
   "author": "Sam Simmons <sam@samiconductor.com>",
-  "license": "ISC"
+  "license": "MIT"
 }

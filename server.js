@@ -1,14 +1,10 @@
 const Hapi = require('hapi')
 const Hoek = require('hoek')
-const path = require('path')
-const routes = require('require-all')({
-  dirname: path.join(__dirname, 'routes'),
-  recursive: false
-})
+const routes = require('./lib/routes')
 
 const server = new Hapi.Server({
   debug: {
-    log: ['error', 'start', 'webpack'],
+    log: ['error', 'start'],
     request: ['error', 'db']
   }
 })
@@ -16,25 +12,11 @@ const server = new Hapi.Server({
 server.connection({port: 3000})
 
 server.register([
-  require('vision'),
   require('inert'),
-  require('./plugins/assets'),
-  require('./plugins/request-repos'),
+  require('./lib/plugins/repos'),
   require('hapi-auth-jwt2')
 ], err => {
   Hoek.assert(!err, err)
-
-  server.views({
-    engines: {
-      pug: require('pug')
-    },
-    relativeTo: __dirname,
-    path: 'views',
-    compileOptions: {
-      pretty: true
-    },
-    isCached: process.env.NODE_ENV !== 'development'
-  })
 
   server.auth.strategy('jwt', 'jwt', true, {
     key: process.env.JWT_SECRET,
