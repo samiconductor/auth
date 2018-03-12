@@ -1,4 +1,5 @@
 const Hapi = require('hapi')
+const setup = require('./setup')
 const monitoring = require('./lib/monitoring')
 const cors = require('./lib/cors')
 const validate = require('./lib/validate-jwt')
@@ -13,6 +14,8 @@ const server = new Hapi.Server({
 })
 
 const init = async () => {
+  await setup({ verify: true })
+
   await server.register([
     {
       plugin: require('good'),

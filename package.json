@@ -10,17 +10,20 @@
     "prepublishOnly": "npm run lint",
     "lint": "eslint --ext .js server.js lib/",
     "lint:fix": "npm run lint -- --fix",
-    "serve": "cross-env NODE_ENV=development JWT_SECRET=jwt DB=db/auth.db nodemon server.js"
+    "setup": "cross-env NODE_ENV=development DB=auth.db node setup",
+    "serve": "cross-env NODE_ENV=development JWT_SECRET=jwt DB=auth.db nodemon server"
   },
   "dependencies": {
     "bcrypt": "^1.0.3",
     "boom": "^7.2.0",
+    "camelcase": "^4.1.0",
     "good": "^8.1.0",
     "good-console": "^7.1.0",
     "good-squeeze": "^5.0.2",
     "hapi": "^17.2.2",
     "hapi-auth-jwt2": "^8.0.0",
     "hoek": "^5.0.3",
+    "inquire": "^0.4.8",
     "joi": "^13.1.2",
     "jsonwebtoken": "^8.2.0",
     "moment": "^2.21.0",
