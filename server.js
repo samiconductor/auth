@@ -1,60 +1,61 @@
-const Hapi = require('hapi')
-const setup = require('./setup')
-const monitoring = require('./lib/monitoring')
-const cors = require('./lib/cors')
-const validate = require('./lib/validate-jwt')
-const routes = require('./lib/routes')
+const Hapi = require("hapi");
+const setup = require("./setup");
+const monitoring = require("./api/monitoring");
+const validate = require("./api/validate-jwt");
+const nuxt = require("./api/plugins/nuxt");
+const routes = require("./api/routes");
 
 const server = new Hapi.Server({
   port: 3000,
-  host: 'localhost',
-  routes: {
-    cors
-  }
-})
+  host: "localhost"
+});
 
 const init = async () => {
-  await setup({ verify: true })
+  await setup({ verify: true });
 
   await server.register([
     {
-      plugin: require('good'),
+      plugin: require("good"),
       options: monitoring
-    }, {
-      plugin: require('./lib/plugins/repos'),
-      options: {
-        verbose: process.env.NODE_ENV === 'development'
-      },
     },
-    require('hapi-auth-jwt2')
-  ])
+    {
+      plugin: require("./api/plugins/repos"),
+      options: {
+        verbose: process.env.NODE_ENV === "development"
+      }
+    },
+    require("hapi-auth-jwt2")
+  ]);
 
-  server.auth.strategy('jwt', 'jwt', {
+  server.auth.strategy("jwt", "jwt", {
     key: process.env.JWT_SECRET,
     validate,
     verifyOptions: {
-      algorithms: ['HS256']
+      algorithms: ["HS256"]
     }
-  })
+  });
 
-  server.auth.default('jwt')
+  server.auth.default("jwt");
 
-  server.state('token', {
-    isHttpOnly: process.env.NODE_ENV !== 'development',
-    isSecure: process.env.NODE_ENV !== 'development'
-  })
+  server.state("token", {
+    path: "/",
+    isHttpOnly: process.env.NODE_ENV !== "development",
+    isSecure: process.env.NODE_ENV !== "development"
+  });
 
-  server.route(Object.values(routes))
+  await server.register(nuxt);
 
-  await server.start()
+  server.route(Object.values(routes));
 
-  server.log(['start'], `Server running at: ${server.info.uri}`)
-}
+  await server.start();
 
-process.on('unhandledRejection', error => {
+  server.log(["start"], `Server running at: ${server.info.uri}`);
+};
+
+process.on("unhandledRejection", error => {
   /* eslint no-console: "off" */
-  console.error(error)
-  process.exit(1)
-})
+  console.error(error);
+  process.exit(1);
+});
 
-init()
+init();

@@ -1,22 +1,27 @@
 {
-  "name": "auth-server",
-  "description": "Authentication server for Nginx auth request module",
+  "name": "auth",
+  "description": "Authentication for Nginx auth request module",
   "version": "1.0.0",
   "author": "Sam Simmons <sam@samiconductor.com>",
   "license": "MIT",
   "main": "server.js",
-  "repository": "samiconductor/auth-server",
+  "repository": "samiconductor/auth",
+  "private": true,
   "scripts": {
-    "prepublishOnly": "npm run lint",
-    "lint": "eslint --ext .js server.js lib/",
-    "lint:fix": "npm run lint -- --fix",
+    "dev": "cross-env NODE_ENV=development JWT_SECRET=jwt DB=auth.db nodemon --config .nodemon.json server",
     "setup": "cross-env NODE_ENV=development DB=auth.db node setup",
-    "serve": "cross-env NODE_ENV=development JWT_SECRET=jwt DB=auth.db nodemon server"
+    "build": "nuxt build",
+    "lint": "eslint --ext .js,.vue --ignore-path .gitignore .",
+    "lintfix": "npm run lint -- --fix",
+    "precommit": "npm run lint"
   },
   "dependencies": {
     "bcrypt": "^1.0.3",
     "boom": "^7.2.0",
     "camelcase": "^4.1.0",
+    "cookie": "^0.3.1",
+    "element-ui": "^2.3.2",
+    "express-jwt": "^5.3.1",
     "good": "^8.1.0",
     "good-console": "^7.1.0",
     "good-squeeze": "^5.0.2",
@@ -27,22 +32,31 @@
     "joi": "^13.1.2",
     "jsonwebtoken": "^8.2.0",
     "moment": "^2.21.0",
+    "nuxt": "^1.4.0",
     "require-all": "^2.2.0",
     "slug": "^0.9.1",
     "sqlite": "^2.9.1",
-    "uuid": "^3.2.1"
+    "uuid": "^3.2.1",
+    "whatwg-fetch": "^2.0.4"
   },
   "devDependencies": {
+    "babel-eslint": "^8.2.2",
+    "babel-plugin-transform-builtin-extend": "^1.1.2",
     "cross-env": "^5.1.4",
-    "eslint": "^4.18.2",
-    "glob": "^7.1.2",
-    "nodemon": "^1.17.1",
-    "rimraf": "^2.6.2"
+    "eslint": "^4.19.1",
+    "eslint-config-prettier": "^2.9.0",
+    "eslint-friendly-formatter": "^3.0.0",
+    "eslint-loader": "^1.9.0",
+    "eslint-plugin-prettier": "^2.6.0",
+    "eslint-plugin-vue": "^4.4.0",
+    "nodemon": "^1.17.3",
+    "prettier": "^1.11.1"
   },
   "keywords": [
     "jwt",
     "hapi",
     "auth",
-    "nginx"
+    "nginx",
+    "nuxt"
   ]
 }
