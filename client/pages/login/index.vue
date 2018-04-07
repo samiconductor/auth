@@ -1,102 +1,88 @@
 <template>
 
-  <el-main>
+  <v-card class="elevation-12">
 
-    <el-alert
-      v-if="errors.message"
-      :title="errors.message"
-      type="warning"
-      show-icon />
+    <v-toolbar
+      dark
+      color="primary">
+      <v-toolbar-title>Login</v-toolbar-title>
+    </v-toolbar>
 
-    <el-form
-      ref="loginForm"
-      :model="credentials"
-      :rules="rules"
-      @submit.native.prevent="submitLogin">
+    <v-form
+      ref="form"
+      v-model="valid"
+      @submit.prevent="login">
 
-      <el-form-item
-        label="Username"
-        prop="username">
-        <el-input
-          v-model.trim="credentials.username"
-          placeholder="Username" />
-      </el-form-item>
+      <v-card-text>
+        <v-alert
+          v-model="error"
+          type="error"
+          dismissible>
+          {{ error }}
+        </v-alert>
 
-      <el-form-item
-        label="Password"
-        prop="password">
-        <el-input
-          v-model="credentials.password"
-          type="password"
-          placeholder="password" />
-      </el-form-item>
+        <v-text-field
+          v-model.trim="username"
+          :rules="usernameRules"
+          prepend-icon="person"
+          label="Username"
+          type="text"
+          required />
+        <v-text-field
+          v-model="password"
+          :rules="passwordRules"
+          prepend-icon="lock"
+          label="Password"
+          type="password" />
+      </v-card-text>
 
-      <el-form-item>
-        <el-button
-          type="primary"
-          native-type="submit">
+      <v-card-actions>
+        <v-spacer />
+        <v-btn
+          :disabled="!valid"
+          color="primary"
+          type="submit"
+          @click="login">
           Login
-        </el-button>
-      </el-form-item>
+        </v-btn>
+      </v-card-actions>
 
-    </el-form>
+    </v-form>
 
-  </el-main>
+  </v-card>
 
 </template>
 
 <script>
-import { ApiError } from "../../lib/api";
-
 export default {
+  layout: "login",
   data() {
     return {
-      errors: {},
-      credentials: {
-        username: "",
-        password: ""
-      },
-      rules: {
-        username: [
-          {
-            required: true,
-            message: "Please provide a username",
-            trigger: "change"
-          }
-        ],
-        password: [
-          {
-            required: true,
-            message: "Please provide a password",
-            trigger: "change"
-          }
-        ]
-      }
+      valid: false,
+      error: null,
+      username: "",
+      usernameRules: [v => !!v || "Please provide a username"],
+      password: "",
+      passwordRules: [v => !!v || "Please provide a password"]
     };
   },
   methods: {
-    submitLogin() {
-      this.$refs.loginForm.validate(valid => {
-        if (!valid) {
-          return false;
-        }
-
-        this.login();
-      });
-    },
     async login() {
-      this.errors = {};
+      if (!this.$refs.form.validate()) {
+        return;
+      }
+
+      this.error = null;
 
       try {
-        await this.$store.dispatch("login", this.credentials);
+        await this.$store.dispatch("login", {
+          username: this.username,
+          password: this.password
+        });
 
         this.$router.push("/");
       } catch (error) {
-        if (error instanceof ApiError) {
-          this.errors = error.errors;
-        } else {
-          this.$set(this.errors, "message", error.message);
-        }
+        this.error = error.message;
       }
     }
   }

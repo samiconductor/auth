@@ -11,20 +11,24 @@ module.exports = {
         content: "Web app for auth server"
       }
     ],
-    link: [{ rel: "icon", type: "image/x-icon", href: "/favicon.ico" }]
+    link: [
+      { rel: "icon", type: "image/x-icon", href: "/favicon.ico" },
+      {
+        rel: "stylesheet",
+        href:
+          "https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons"
+      }
+    ]
   },
-  css: [
-    "element-ui/lib/theme-chalk/reset.css",
-    "element-ui/lib/theme-chalk/index.css"
-  ],
+  css: ["@/assets/style/app.styl"],
   loading: { color: "#3B8070" },
-  plugins: ["@/plugins/element-ui"],
+  plugins: ["@/plugins/vuetify.js"],
   router: {
     middleware: "auth"
   },
   serverMiddleware: ["./jwt.js"],
   build: {
-    vendor: ["whatwg-fetch"],
+    vendor: ["whatwg-fetch", "@/plugins/vuetify.js"],
     babel: {
       presets: ["vue-app"],
       plugins: [
@@ -36,6 +40,7 @@ module.exports = {
         ]
       ]
     },
+    extraceCSS: true,
     // run eslint on save
     extend(config, { isDev, isClient }) {
       if (isDev && isClient) {

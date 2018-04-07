@@ -17,10 +17,8 @@
   },
   "dependencies": {
     "bcrypt": "^1.0.3",
-    "boom": "^7.2.0",
     "camelcase": "^4.1.0",
     "cookie": "^0.3.1",
-    "element-ui": "^2.3.2",
     "express-jwt": "^5.3.1",
     "good": "^8.1.0",
     "good-console": "^7.1.0",
@@ -37,6 +35,7 @@
     "slug": "^0.9.1",
     "sqlite": "^2.9.1",
     "uuid": "^3.2.1",
+    "vuetify": "^1.0.13",
     "whatwg-fetch": "^2.0.4"
   },
   "devDependencies": {
@@ -50,7 +49,9 @@
     "eslint-plugin-prettier": "^2.6.0",
     "eslint-plugin-vue": "^4.4.0",
     "nodemon": "^1.17.3",
-    "prettier": "^1.11.1"
+    "prettier": "^1.11.1",
+    "stylus": "^0.54.5",
+    "stylus-loader": "^3.0.2"
   },
   "keywords": [
     "jwt",
