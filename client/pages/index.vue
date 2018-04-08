@@ -1,15 +1,28 @@
 <template>
-  <div>
-    Hello {{ name }}
-  </div>
+
+  <v-jumbotron>
+    <v-container fill-height>
+      <v-layout align-center>
+        <v-flex>
+          <h3 class="display-3">Welcome {{ me.username }}</h3>
+          <span class="subheading">You have been logged in for {{ loginTime.fromNow(true) }}.</span>
+        </v-flex>
+      </v-layout>
+    </v-container>
+  </v-jumbotron>
+
 </template>
 
 <script>
+import { mapState, mapGetters } from "vuex";
+
 export default {
-  data() {
-    return {
-      name: "Nuxt"
-    };
+  computed: {
+    ...mapState(["me"]),
+    ...mapGetters(["loginTime"])
+  },
+  async fetch({ store }) {
+    await store.dispatch("me");
   }
 };
 </script>

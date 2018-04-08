@@ -1,15 +1,29 @@
 import Vuex from "vuex";
-import api, { ApiError } from "../lib/api";
-import log from "../lib/log";
+import get from "lodash/get";
+import moment from "moment";
 
 export default () => {
   return new Vuex.Store({
     state: {
-      auth: false
+      auth: false,
+      me: {}
+    },
+    getters: {
+      adminAccess(state) {
+        return get(state, "me.access.admin", false);
+      },
+      loginTime(state) {
+        const loginTime = get(state, "me.session.startTime");
+
+        return loginTime && new moment(loginTime);
+      }
     },
     mutations: {
       auth(store, auth) {
         store.auth = auth;
+      },
+      me(store, me) {
+        store.me = me;
       }
     },
     actions: {
@@ -17,21 +31,22 @@ export default () => {
         commit("auth", req.hasOwnProperty("user"));
       },
       async login({ commit }, { username, password }) {
-        try {
-          const response = await api.post("/login", { username, password });
+        await this.$axios.$post("/login", {
+          username,
+          password
+        });
 
-          commit("auth", response.ok);
+        commit("auth", true);
+      },
+      async logout({ commit }) {
+        await this.$axios.$post("/logout");
 
-          if (!response.ok) {
-            const data = await response.json();
+        commit("auth", false);
+      },
+      async me({ commit }) {
+        const me = await this.$axios.$get("/me");
 
-            throw new ApiError(response, data, data.message);
-          }
-        } catch (error) {
-          log.error(error);
-
-          throw error;
-        }
+        commit("me", me);
       }
     }
   });

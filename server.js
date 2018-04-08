@@ -6,8 +6,8 @@ const nuxt = require("./api/plugins/nuxt");
 const routes = require("./api/routes");
 
 const server = new Hapi.Server({
-  port: 3000,
-  host: "localhost"
+  host: process.env.API_HOST,
+  port: process.env.API_PORT
 });
 
 const init = async () => {
