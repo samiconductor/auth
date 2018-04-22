@@ -56,7 +56,7 @@ async function adminSetupRequired(users) {
 
     return !adminUsers.length;
   } catch (error) {
-    if (errors.instanceOf(errors.NoResultsError)) {
+    if (errors.instanceOf(errors.NotFoundError)) {
       return true;
     }
 

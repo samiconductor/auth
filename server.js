@@ -45,7 +45,7 @@ const init = async () => {
 
   await server.register(nuxt);
 
-  server.route(Object.values(routes));
+  server.route(await routes());
 
   await server.start();
 

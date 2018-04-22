@@ -1,12 +1,12 @@
-const getAuthUser = require("./pre/get-auth-user");
+const getAuthUser = require("../pre/get-auth-user");
 
 module.exports = {
   method: "GET",
-  path: "/api/me",
+  path: `${process.env.API_PREFIX}/me`,
   options: {
     pre: [getAuthUser]
   },
-  handler(request) {
-    return request.pre.user;
+  handler({ pre: { user } }) {
+    return user;
   }
 };

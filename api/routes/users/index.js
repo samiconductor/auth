@@ -1,6 +1,6 @@
 module.exports = {
   method: "GET",
-  path: "/api/users",
+  path: `${process.env.API_PREFIX}/users`,
   options: {
     auth: {
       access: [
@@ -10,7 +10,7 @@ module.exports = {
       ]
     }
   },
-  async handler(request) {
-    return await request.app.repos.users.all();
+  async handler({ app: { repos: { users } } }) {
+    return await users.all();
   }
 };

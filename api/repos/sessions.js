@@ -2,37 +2,25 @@ const moment = require("moment");
 const errors = require("../errors");
 const uuid = require("uuid/v4");
 
-module.exports = class Session {
+module.exports = class Sessions {
   constructor(db) {
     this.db = db;
   }
 
-  from(row) {
-    return {
-      id: row.id,
-      userId: row.user_id,
-      startTime: moment.unix(row.start_timestamp),
-      endTime: row.end_timestamp
-        ? moment.unix(row.end_timestamp)
-        : moment.invalid()
-    };
-  }
-
   async get(id) {
-    const query =
-      "select id, user_id, start_timestamp, end_timestamp from sessions where id = ?";
+    const query = "select * from sessions where id = ?";
     const params = [id];
     const session = await this.db.get(query, ...params);
 
     if (!session) {
-      throw new errors.NoResultsError(
+      throw new errors.NotFoundError(
         query,
         params,
         `No session found with Id ${id}`
       );
     }
 
-    return this.from(session);
+    return this._mapRow(session);
   }
 
   async valid(id) {
@@ -47,7 +35,17 @@ module.exports = class Session {
     return session;
   }
 
-  async createForUser(userId) {
+  async user(userId, { active = false }) {
+    const activeQuery = active ? "and end_timestamp is null" : "";
+    const query = `select * from sessions
+      where user_id = ? ${activeQuery}
+      order by start_timestamp desc`;
+    const sessions = await this.db.all(query, [userId]);
+
+    return sessions.map(session => this._mapRow(session));
+  }
+
+  async create(userId) {
     const id = uuid();
     const query = "insert into sessions (id, user_id) values (?, ?)";
 
@@ -65,5 +63,14 @@ module.exports = class Session {
     await this.db.run(query, expire, terminate, id);
 
     return this.get(id);
+  }
+
+  _mapRow({ id, user_id: userId, start_timestamp, end_timestamp }) {
+    return {
+      id,
+      userId,
+      startTime: moment.unix(start_timestamp),
+      endTime: end_timestamp ? moment.unix(end_timestamp) : moment.invalid()
+    };
   }
 };

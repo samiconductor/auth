@@ -20,9 +20,6 @@ export default {
   computed: {
     ...mapState(["me"]),
     ...mapGetters(["loginTime"])
-  },
-  async fetch({ store }) {
-    await store.dispatch("me");
   }
 };
 </script>

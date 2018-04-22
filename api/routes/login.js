@@ -18,7 +18,7 @@ const schema = Joi.object().keys({
 
 module.exports = {
   method: "POST",
-  path: "/api/login",
+  path: `${process.env.API_PREFIX}/login`,
   options: {
     auth: false,
     validate: {
@@ -32,13 +32,13 @@ module.exports = {
       }
     }
   },
-  async handler(request, h) {
+  async handler(
+    { app: { repos: { users, sessions } }, payload: { username, password } },
+    h
+  ) {
     try {
-      const user = await request.app.repos.users.withCredentials(
-        request.payload.username,
-        request.payload.password
-      );
-      const session = await request.app.repos.sessions.createForUser(user.id);
+      const user = await users.withCredentials(username, password);
+      const session = await sessions.create(user.id);
       const token = jwt.sign(
         {
           sessionId: session.id
@@ -53,7 +53,7 @@ module.exports = {
       if (
         errors.instanceOf(
           error,
-          errors.NoResultsError,
+          errors.NotFoundError,
           errors.InvalidCredentialsError
         )
       ) {

@@ -41,8 +41,7 @@
         <v-btn
           :disabled="!valid"
           color="primary"
-          type="submit"
-          @click="login">
+          type="submit">
           Login
         </v-btn>
       </v-card-actions>
@@ -79,6 +78,8 @@ export default {
           username: this.username,
           password: this.password
         });
+
+        await this.$store.dispatch("me");
 
         this.$router.push("/");
       } catch (error) {

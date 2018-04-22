@@ -1,6 +1,6 @@
 module.exports = {
   method: "GET",
-  path: "/api/authorized",
+  path: `${process.env.API_PREFIX}/authorized`,
   options: {
     // TODO validate query
     auth: {

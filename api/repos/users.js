@@ -1,22 +1,26 @@
 const bcrypt = require("bcrypt");
-const uuid = require("uuid/v4");
-const camelCase = require("camelcase");
-const slug = require("slug");
 const errors = require("../errors");
 const transaction = require("../transaction");
+const Privileges = require("./privileges");
 
-slug.defaults.mode = "rfc3986";
-
-module.exports = class User {
+module.exports = class Users {
   constructor(db) {
     this.db = db;
-    this.uuid = uuid();
+    this.privileges = new Privileges(db);
   }
 
   async all() {
     const query = "select id, username from users";
+    const users = await this.db.all(query);
 
-    return this.db.all(query);
+    return Promise.all(
+      users.map(async user => {
+        return {
+          ...user,
+          privileges: await this.privileges.user(user.id)
+        };
+      })
+    );
   }
 
   async get(id) {
@@ -25,49 +29,16 @@ module.exports = class User {
     const user = await this.db.get(query, ...params);
 
     if (!user) {
-      throw new errors.NoResultsError(
+      throw new errors.NotFoundError(
         query,
         params,
         `No user found with Id ${id}`
       );
     }
 
-    const privileges = await this.privileges(user.id);
+    const privileges = await this.privileges.user(user.id);
 
     return { ...user, privileges };
-  }
-
-  async privileges(id) {
-    const query = `select priv_id as id, name, description
-      from user_privs up
-      join privs p on p.id = up.priv_id
-      where up.user_id = ?`;
-
-    return this.db.all(query, id);
-  }
-
-  async scopes(id) {
-    const privileges = await this.privileges(id);
-
-    return privileges.map(priv => this._privilegeScope(priv));
-  }
-
-  async allPrivilegeScopes() {
-    const query = "select name from privs";
-    const privileges = await this.db.all(query);
-
-    return privileges.reduce((privs, priv) => {
-      return Object.assign(privs, {
-        [camelCase(priv.name)]: this._privilegeScope(priv)
-      });
-    }, {});
-  }
-
-  /**
-   * Avoid privilege names clashing with other scope names.
-   */
-  _privilegeScope(privilege) {
-    return `${slug(privilege.name).toLowerCase()}-${this.uuid}`;
   }
 
   async withUsername(username) {
@@ -76,7 +47,7 @@ module.exports = class User {
     const user = await this.db.get(query, ...params);
 
     if (!user) {
-      throw new errors.NoResultsError(
+      throw new errors.NotFoundError(
         query,
         params,
         `No user found with username ${username}`
@@ -109,30 +80,10 @@ module.exports = class User {
 
     return await transaction(this.db, "add_user", async () => {
       const { lastID } = await this.db.run(query, ...params);
-      const privs = await this.addUserPrivileges(lastID, { admin, sites });
+      const privs = await this.privileges.add(lastID, { admin, sites });
 
       return { user: lastID, privs };
     });
-  }
-
-  async addUserPrivileges(userId, { admin = false, sites = false } = {}) {
-    const query = `replace into user_privs (user_id, priv_id)
-      select ?, id from privs p where lower(p.name) = ?`;
-    const privs = [];
-
-    if (admin) privs.push("admin");
-    if (sites) privs.push("sites");
-
-    if (privs.length) {
-      return await transaction(this.db, "add_privs", async () => {
-        return await Promise.all(
-          privs.map(async priv => {
-            const { lastID } = await this.db.run(query, userId, priv);
-            return lastID;
-          })
-        );
-      });
-    }
   }
 
   async admins() {

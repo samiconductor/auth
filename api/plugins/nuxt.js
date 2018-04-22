@@ -19,7 +19,7 @@ module.exports = {
         auth: false
       },
       handler(request, h) {
-        if (request.path.startsWith("/api")) {
+        if (request.path.startsWith(process.env.API_PREFIX)) {
           return h.continue;
         }
 

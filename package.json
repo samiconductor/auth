@@ -8,7 +8,7 @@
   "repository": "samiconductor/auth",
   "private": true,
   "scripts": {
-    "dev": "cross-env NODE_ENV=development JWT_SECRET=jwt DB=auth.db API_HOST=localhost API_PORT=3000 nodemon --config .nodemon.json server",
+    "dev": "cross-env NODE_ENV=development JWT_SECRET=jwt DB=auth.db API_HOST=localhost API_PORT=3000 API_PREFIX=/api nodemon --config .nodemon.json server",
     "setup": "cross-env NODE_ENV=development DB=auth.db node setup",
     "build": "nuxt build",
     "lint": "eslint --ext .js,.vue --ignore-path .gitignore .",
@@ -18,11 +18,13 @@
   "dependencies": {
     "@nuxtjs/axios": "^5.3.1",
     "@nuxtjs/vuetify": "^0.4.1",
+    "b": "^2.0.1",
     "bcrypt": "^1.0.3",
     "boom": "^7.2.0",
     "camelcase": "^4.1.0",
     "cookie": "^0.3.1",
     "express-jwt": "^5.3.1",
+    "fs-walk": "0.0.2",
     "good": "^8.1.0",
     "good-console": "^7.1.0",
     "good-squeeze": "^5.0.2",
