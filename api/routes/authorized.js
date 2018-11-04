@@ -6,7 +6,7 @@ module.exports = {
     auth: {
       access: [
         {
-          scope: ["{credentials.allPrivileges.sites}", "{query.site}"]
+          scope: ["{query.site}"]
         }
       ]
     }

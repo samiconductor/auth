@@ -4,23 +4,23 @@ const slug = require("slug");
 slug.defaults.mode = "rfc3986";
 
 /**
- * Append unique Id to privilege scopes to avoid clashing with site name scopes.
+ * Append unique Id to role scopes to avoid clashing with site name scopes.
  */
-const privilegeScope = (privilege, uuid) => {
-  return `${slug(privilege.name).toLowerCase()}-${uuid}`;
+const roleScope = (role, uuid) => {
+  return `${slug(role.name).toLowerCase()}-${uuid}`;
 };
 
-module.exports = async (userId, uuid, { privileges }) => {
-  const user = await privileges.user(userId);
-  const all = await privileges.all();
-  const scope = Object.freeze(user.map(priv => privilegeScope(priv, uuid)));
-  const allPrivileges = Object.freeze(
-    all.reduce((privs, priv) => {
-      return Object.assign(privs, {
-        [camelCase(priv.name)]: privilegeScope(priv, uuid)
+module.exports = async (userId, uuid, { roles }) => {
+  const userRole = await roles.user(userId);
+  const all = await roles.all();
+  const scope = [roleScope(userRole, uuid)];
+  const roleScopes = Object.freeze(
+    all.reduce((roles, role) => {
+      return Object.assign(roles, {
+        [camelCase(role.name)]: roleScope(role, uuid)
       });
     }, {})
   );
 
-  return { scope, allPrivileges };
+  return { scope, roles: roleScopes };
 };

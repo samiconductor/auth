@@ -1,12 +1,12 @@
 const bcrypt = require("bcrypt");
 const errors = require("../errors");
 const transaction = require("../transaction");
-const Privileges = require("./privileges");
+const Roles = require("./roles");
 
 module.exports = class Users {
   constructor(db) {
     this.db = db;
-    this.privileges = new Privileges(db);
+    this.roles = new Roles(db);
   }
 
   async all() {
@@ -17,7 +17,7 @@ module.exports = class Users {
       users.map(async user => {
         return {
           ...user,
-          privileges: await this.privileges.user(user.id)
+          role: await this.roles.user(user.id)
         };
       })
     );
@@ -36,9 +36,9 @@ module.exports = class Users {
       );
     }
 
-    const privileges = await this.privileges.user(user.id);
+    const role = await this.roles.user(user.id);
 
-    return { ...user, privileges };
+    return { ...user, role };
   }
 
   async withUsername(username) {
@@ -72,26 +72,24 @@ module.exports = class Users {
     return user;
   }
 
-  async add(username, password, { admin = false, sites = false } = {}) {
-    const query = "insert into users (username, password) values (?, ?)";
+  async add(username, password, roleName) {
+    const role = await this.roles.get(roleName);
+    const query = `insert into
+      users (username, password, role_id)
+      values (?, ?, ?)`;
     const rounds = 10 + Math.floor(Math.random() * 5);
     const passwordHash = await bcrypt.hash(password, rounds);
-    const params = [username, passwordHash];
+    const params = [username, passwordHash, role.id];
 
-    return await transaction(this.db, "add_user", async () => {
-      const { lastID } = await this.db.run(query, ...params);
-      const privs = await this.privileges.add(lastID, { admin, sites });
-
-      return { user: lastID, privs };
-    });
+    return this.db.run(query, ...params);
   }
 
   async admins() {
-    const query = `select u.id, u.username
+    const query = `select
+      u.id, u.username
       from users u
-      join user_privs up on up.user_id = u.id
-      join privs p on p.id = up.priv_id
-      where lower(p.name) = 'admin'`;
+      join roles r on r.id = u.role_id
+      where lower(r.name) = 'admin'`;
 
     return this.db.all(query);
   }

@@ -1,33 +1,31 @@
 <template>
 
-  <v-container grid-list-md>
-    <v-layout
-      row
-      wrap>
-      <v-flex
-        xs12
-        md6
-        lg4
-        xl3>
-
-        <user
-          v-for="user in users"
-          :key="user.id"
-          :user="user" />
-
-      </v-flex>
-    </v-layout>
-  </v-container>
+  <v-data-table
+    :headers="headers"
+    :items="users"
+    hide-actions
+    class="elevation-1">
+    <template
+      slot="items"
+      slot-scope="props">
+      <td>{{ props.item.username }}</td>
+      <td>{{ props.item.role.name }}</td>
+    </template>
+  </v-data-table>
 
 </template>
 
 <script>
 import { mapState } from "vuex";
-import User from "@/components/admin/users/User.vue";
 
 export default {
-  components: {
-    User
+  data() {
+    return {
+      headers: [
+        { text: "Username", value: "username" },
+        { text: "Role", value: "role" }
+      ]
+    };
   },
   computed: {
     ...mapState("admin", ["users"])

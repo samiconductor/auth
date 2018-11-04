@@ -4,16 +4,16 @@ const scopes = require("./scopes");
 
 module.exports = async ({ sessionId }, request) => {
   try {
-    const { sessions, privileges } = request.app.repos;
+    const { sessions } = request.app.repos;
     const { userId } = await sessions.valid(sessionId);
-    const { scope, allPrivileges } = await scopes(userId, uuid(), {
-      privileges
+    const { scope, roles } = await scopes(userId, uuid(), {
+      roles: request.app.repos.roles
     });
     const credentials = Object.freeze({
       userId,
       sessionId,
       scope,
-      allPrivileges
+      roles
     });
 
     request.log(

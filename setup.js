@@ -30,7 +30,7 @@ const setup = async ({ verify = false } = {}) => {
     if (setupRequired.admin) {
       const { username, password } = await getAdminCredentials();
 
-      await users.add(username, password, { admin: true, sites: true });
+      await users.add(username, password, "admin");
     }
 
     await db.close();

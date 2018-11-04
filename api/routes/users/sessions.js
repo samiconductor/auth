@@ -5,7 +5,7 @@ module.exports = {
     auth: {
       access: [
         {
-          scope: ["{credentials.allPrivileges.admin}"]
+          scope: ["{credentials.roles.admin}"]
         }
       ]
     }

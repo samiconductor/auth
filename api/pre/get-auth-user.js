@@ -3,18 +3,13 @@ module.exports = {
   method: async (request, h) => {
     if (request.auth.isAuthenticated) {
       const { users, sessions } = request.app.repos;
-      const {
-        userId,
-        sessionId,
-        scope,
-        allPrivileges
-      } = request.auth.credentials;
+      const { userId, sessionId, scope, roles } = request.auth.credentials;
 
       const user = await users.get(userId);
       const session = await sessions.get(sessionId);
-      const access = Object.entries(allPrivileges).reduce(
-        (access, [name, privScope]) => {
-          if (scope.some(s => s === privScope)) {
+      const access = Object.entries(roles).reduce(
+        (access, [name, roleScope]) => {
+          if (scope.some(s => s === roleScope)) {
             Object.assign(access, {
               [name]: true
             });

@@ -37,7 +37,8 @@ module.exports = class Sessions {
 
   async user(userId, { active = false }) {
     const activeQuery = active ? "and end_timestamp is null" : "";
-    const query = `select * from sessions
+    const query = `select *
+      from sessions
       where user_id = ? ${activeQuery}
       order by start_timestamp desc`;
     const sessions = await this.db.all(query, [userId]);
