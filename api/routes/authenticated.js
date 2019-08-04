@@ -1,6 +1,6 @@
 module.exports = {
   method: "GET",
-  path: `${process.env.API_PREFIX}/authenticated`,
+  path: "/api/authenticated",
   handler(request, h) {
     return h.continue;
   }

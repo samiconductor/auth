@@ -1,13 +1,13 @@
-const Hapi = require("hapi");
+const Hapi = require("@hapi/hapi");
 const setup = require("./setup");
-const monitoring = require("./api/monitoring");
-const validate = require("./api/validate-jwt");
+const monitoring = require("./api/lib/monitoring");
+const validate = require("./api/lib/jwt/validate");
 const nuxt = require("./api/plugins/nuxt");
-const routes = require("./api/routes");
+const routes = require("./api/lib/routes");
 
-const server = new Hapi.Server({
-  host: process.env.API_HOST,
-  port: process.env.API_PORT
+const server = Hapi.server({
+  host: process.env.HOST,
+  port: process.env.PORT
 });
 
 const init = async () => {
@@ -15,7 +15,7 @@ const init = async () => {
 
   await server.register([
     {
-      plugin: require("good"),
+      plugin: require("@hapi/good"),
       options: monitoring
     },
     {
@@ -40,12 +40,13 @@ const init = async () => {
   server.state("token", {
     path: "/",
     isHttpOnly: process.env.NODE_ENV !== "development",
-    isSecure: process.env.NODE_ENV !== "development"
+    isSecure: process.env.NODE_ENV !== "development",
+    isSameSite: "Strict"
   });
 
   await server.register(nuxt);
 
-  server.route(await routes());
+  server.route(routes);
 
   await server.start();
 

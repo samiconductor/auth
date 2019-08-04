@@ -1,26 +1,15 @@
 const bcrypt = require("bcrypt");
-const errors = require("../errors");
-const transaction = require("../transaction");
-const Roles = require("./roles");
+const errors = require("../lib/errors");
 
 module.exports = class Users {
   constructor(db) {
     this.db = db;
-    this.roles = new Roles(db);
   }
 
   async all() {
     const query = "select id, username from users";
-    const users = await this.db.all(query);
 
-    return Promise.all(
-      users.map(async user => {
-        return {
-          ...user,
-          role: await this.roles.user(user.id)
-        };
-      })
-    );
+    return await this.db.all(query);
   }
 
   async get(id) {
@@ -36,9 +25,7 @@ module.exports = class Users {
       );
     }
 
-    const role = await this.roles.user(user.id);
-
-    return { ...user, role };
+    return user;
   }
 
   async withUsername(username) {
@@ -72,25 +59,14 @@ module.exports = class Users {
     return user;
   }
 
-  async add(username, password, roleName) {
-    const role = await this.roles.get(roleName);
+  async add(username, password) {
     const query = `insert into
-      users (username, password, role_id)
-      values (?, ?, ?)`;
+      users (username, password)
+      values (?, ?)`;
     const rounds = 10 + Math.floor(Math.random() * 5);
     const passwordHash = await bcrypt.hash(password, rounds);
-    const params = [username, passwordHash, role.id];
+    const params = [username, passwordHash];
 
     return this.db.run(query, ...params);
-  }
-
-  async admins() {
-    const query = `select
-      u.id, u.username
-      from users u
-      join roles r on r.id = u.role_id
-      where lower(r.name) = 'admin'`;
-
-    return this.db.all(query);
   }
 };

@@ -1,21 +1,9 @@
-import get from "lodash/get";
-import moment from "moment";
-
 export const state = () => ({
   auth: false,
   me: {}
 });
 
-export const getters = {
-  adminAccess(state) {
-    return get(state, "me.access.admin", false);
-  },
-  loginTime(state) {
-    const loginTime = get(state, "me.session.startTime");
-
-    return loginTime && new moment(loginTime);
-  }
-};
+export const getters = {};
 
 export const mutations = {
   auth(store, auth) {
@@ -28,13 +16,18 @@ export const mutations = {
 
 export const actions = {
   async nuxtServerInit({ commit, dispatch }, { req }) {
-    const auth = req.hasOwnProperty("user");
+    const auth = !!req.authenticated;
 
     commit("auth", auth);
 
     if (auth) {
       await dispatch("me");
     }
+  },
+  async me({ commit }) {
+    const me = await this.$axios.$get("/me");
+
+    commit("me", me);
   },
   async login({ commit }, { username, password }) {
     await this.$axios.$post("/login", {
@@ -48,10 +41,5 @@ export const actions = {
     await this.$axios.$post("/logout");
 
     commit("auth", false);
-  },
-  async me({ commit }) {
-    const me = await this.$axios.$get("/me");
-
-    commit("me", me);
   }
 };

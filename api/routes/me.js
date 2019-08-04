@@ -2,7 +2,7 @@ const getAuthUser = require("../pre/get-auth-user");
 
 module.exports = {
   method: "GET",
-  path: `${process.env.API_PREFIX}/me`,
+  path: "/api/me",
   options: {
     pre: [getAuthUser]
   },

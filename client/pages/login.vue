@@ -1,60 +1,45 @@
 <template>
-
   <v-card class="elevation-12">
-
-    <v-toolbar
-      dark
-      color="primary">
+    <v-toolbar dark color="primary">
       <v-toolbar-title>Login</v-toolbar-title>
     </v-toolbar>
 
-    <v-form
-      ref="form"
-      v-model="valid"
-      @submit.prevent="login">
-
+    <v-form ref="form" v-model="valid" @submit.prevent="login">
       <v-card-text>
-        <v-alert
-          v-model="error"
-          type="error"
-          dismissible>
+        <v-alert v-model="error" type="error" dismissible>
           {{ error }}
         </v-alert>
 
         <v-text-field
           v-model.trim="username"
           :rules="usernameRules"
-          prepend-icon="person"
+          prepend-icon="mdi-account-box"
           label="Username"
           type="text"
-          required />
+          required
+        />
         <v-text-field
           v-model="password"
           :rules="passwordRules"
-          prepend-icon="lock"
+          prepend-icon="mdi-lock"
           label="Password"
-          type="password" />
+          type="password"
+        />
       </v-card-text>
 
       <v-card-actions>
         <v-spacer />
-        <v-btn
-          :disabled="!valid"
-          color="primary"
-          type="submit">
+        <v-btn :disabled="!valid" color="primary" type="submit">
           Login
         </v-btn>
       </v-card-actions>
-
     </v-form>
-
   </v-card>
-
 </template>
 
 <script>
 export default {
-  layout: "login",
+  layout: "centered",
   data() {
     return {
       valid: false,

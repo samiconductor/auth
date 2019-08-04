@@ -1,4 +1,4 @@
-const connectRepos = require("../connect-repos");
+const connect = require("../lib/db/repos");
 const { version } = require("../../package.json");
 
 exports.plugin = {
@@ -6,7 +6,7 @@ exports.plugin = {
   version,
   async register(server, { verbose = false }) {
     server.ext("onPreAuth", async (request, h) => {
-      const { db, repos } = await connectRepos({ verbose });
+      const { db, repos } = await connect({ verbose });
 
       if (verbose) {
         db.driver.on("trace", sql => {

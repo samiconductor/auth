@@ -1,25 +1,19 @@
 <template>
-
-  <v-jumbotron>
-    <v-container fill-height>
-      <v-layout align-center>
-        <v-flex>
-          <h3 class="display-3">Welcome {{ me.username }}</h3>
-          <span class="subheading">You have been logged in for {{ loginTime.fromNow(true) }}.</span>
-        </v-flex>
-      </v-layout>
-    </v-container>
-  </v-jumbotron>
-
+  <v-container fill-height>
+    <v-layout align-center>
+      <v-flex>
+        <h3 class="display-3">Welcome {{ me.username }}</h3>
+      </v-flex>
+    </v-layout>
+  </v-container>
 </template>
 
 <script>
-import { mapState, mapGetters } from "vuex";
+import { mapState } from "vuex";
 
 export default {
   computed: {
-    ...mapState(["me"]),
-    ...mapGetters(["loginTime"])
+    ...mapState(["me"])
   }
 };
 </script>

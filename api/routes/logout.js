@@ -1,24 +1,12 @@
 module.exports = {
   method: "POST",
-  path: `${process.env.API_PREFIX}/logout`,
-  async handler(
-    {
-      app: { repos: { sessions } },
-      auth: { isAuthenticated, credentials: { sessionId } }
-    },
-    h
-  ) {
-    if (isAuthenticated) {
-      await sessions.end(sessionId);
-    }
-
-    h.unstate("token");
+  path: "/api/logout",
+  options: {
+    auth: false
+  },
+  async handler(request, h) {
+    h.unstate(process.env.TOKEN);
 
     return h.continue;
-  },
-  options: {
-    auth: {
-      mode: "try"
-    }
   }
 };

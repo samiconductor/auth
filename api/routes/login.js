@@ -1,28 +1,15 @@
-const Joi = require("joi");
-const Boom = require("boom");
-const jwt = require("jsonwebtoken");
-const errors = require("../errors");
-
-const schema = Joi.object().keys({
-  username: Joi.string()
-    .empty("")
-    .trim()
-    .alphanum()
-    .max(50)
-    .required(),
-  password: Joi.string()
-    .empty("")
-    .max(200)
-    .required()
-});
+const Boom = require("@hapi/boom");
+const errors = require("../lib/errors");
+const createToken = require("../lib/jwt/create");
+const { username, password } = require("../lib/validate");
 
 module.exports = {
   method: "POST",
-  path: `${process.env.API_PREFIX}/login`,
+  path: "/api/login",
   options: {
     auth: false,
     validate: {
-      payload: schema,
+      payload: { username, password },
       failAction(request, h, error) {
         const invalidLogin = Boom.badRequest("Invalid login");
 
@@ -33,20 +20,19 @@ module.exports = {
     }
   },
   async handler(
-    { app: { repos: { users, sessions } }, payload: { username, password } },
+    {
+      app: {
+        repos: { users }
+      },
+      payload: { username, password }
+    },
     h
   ) {
     try {
       const user = await users.withCredentials(username, password);
-      const session = await sessions.create(user.id);
-      const token = jwt.sign(
-        {
-          sessionId: session.id
-        },
-        process.env.JWT_SECRET
-      );
+      const token = createToken(user.username);
 
-      h.state("token", token);
+      h.state(process.env.TOKEN, token);
 
       return h.continue;
     } catch (error) {

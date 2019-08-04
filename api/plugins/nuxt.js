@@ -6,8 +6,10 @@ module.exports = {
   name: "nuxt",
   version,
   async register(server, { config = "nuxt.config.js" }) {
-    const configPath = resolve(process.cwd(), config);
+    const configPath = resolve(__dirname, "../../", config);
     const nuxt = new Nuxt(require(configPath));
+
+    await nuxt.ready();
 
     server.expose("nuxt", nuxt);
 
@@ -16,16 +18,21 @@ module.exports = {
       path: "/{path*}",
       options: {
         id: "Nuxt.render",
-        auth: false
+        auth: {
+          mode: "try"
+        }
       },
       handler(request, h) {
-        if (request.path.startsWith(process.env.API_PREFIX)) {
+        if (request.path.startsWith("/api")) {
           return h.continue;
         }
 
-        const { req, res } = request.raw;
+        const {
+          auth: { isAuthenticated: authenticated },
+          raw: { req, res }
+        } = request;
 
-        nuxt.render(req, res);
+        nuxt.render(Object.assign(req, { authenticated }), res);
 
         return h.abandon;
       }

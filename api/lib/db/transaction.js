@@ -1,4 +1,4 @@
-const errors = require("./errors");
+const errors = require("../errors");
 
 module.exports = async (db, name, run, timeout = 10000) => {
   let result = null;

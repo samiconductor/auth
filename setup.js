@@ -1,14 +1,16 @@
 /* eslint no-console: "off" */
 const path = require("path");
-const connectRepos = require("./api/connect-repos");
-const errors = require("./api/errors");
+const repos = require("./api/lib/db/repos");
 const inquirer = require("inquirer");
 
 const setup = async ({ verify = false } = {}) => {
   try {
     const dbPath = process.env.DB || (await getDbPath());
     const verbose = process.env.NODE_ENV === "development";
-    const { db, repos: { users } } = await connectRepos({ dbPath, verbose });
+    const {
+      db,
+      repos: { users }
+    } = await repos({ dbPath, verbose });
 
     if (verbose) {
       db.driver.on("trace", console.debug.bind(console));
@@ -16,21 +18,19 @@ const setup = async ({ verify = false } = {}) => {
 
     await db.migrate();
 
-    const setupRequired = {
-      admin: await adminSetupRequired(users)
-    };
+    const setupRequired = await userSetupRequired(users);
 
-    if (Object.values(setupRequired).some(req => req) && verify) {
+    if (setupRequired && verify) {
       console.log(
         `Setup the server first by running 'node ${path.basename(__filename)}'`
       );
       process.exit(1);
     }
 
-    if (setupRequired.admin) {
-      const { username, password } = await getAdminCredentials();
+    if (setupRequired) {
+      const { username, password } = await getUserCredentials();
 
-      await users.add(username, password, "admin");
+      await users.add(username, password);
     }
 
     await db.close();
@@ -50,18 +50,10 @@ if (require.main === module) {
   setup();
 }
 
-async function adminSetupRequired(users) {
-  try {
-    const adminUsers = await users.admins();
+async function userSetupRequired(users) {
+  const all = await users.all();
 
-    return !adminUsers.length;
-  } catch (error) {
-    if (errors.instanceOf(errors.NotFoundError)) {
-      return true;
-    }
-
-    throw error;
-  }
+  return !all.length;
 }
 
 async function getDbPath() {
@@ -75,12 +67,12 @@ async function getDbPath() {
   return dbPath;
 }
 
-async function getAdminCredentials() {
+async function getUserCredentials() {
   return await inquirer.prompt([
     {
       type: "input",
       name: "username",
-      message: "Please provide the admin username",
+      message: "Please provide a username",
       validate(username) {
         return /^[\w-]+$/.test(username)
           ? true
@@ -90,9 +82,9 @@ async function getAdminCredentials() {
     {
       type: "password",
       name: "password",
-      message: "Please provide the admin password",
+      message: "Please provide a password",
       validate(password) {
-        return password.length ? true : "Admin password must not be empty";
+        return password.length ? true : "Password must not be empty";
       }
     }
   ]);
